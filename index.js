@@ -18,6 +18,35 @@ app.get("/", function (req, res) {
   res.sendFile(__dirname + '/views/index.html');
 });
 
+app.get('/api/:date?', (req, res) => {
+  const dateParam = req.params.date;
+
+  let date;
+
+  // Check if no parameter is provided
+  if (!dateParam) {
+    date = new Date();
+  } else {
+    // Check if the parameter is a valid number (Unix timestamp)
+    if (!isNaN(dateParam)) {
+      date = new Date(parseInt(dateParam));
+    } else {
+      // Treat as ISO date string
+      date = new Date(dateParam);
+    }
+  }
+
+  // Validate the parsed date
+  if (isNaN(date.getTime())) {
+    return res.json({ error: 'Invalid Date' });
+  }
+
+  // Construct the response
+  res.json({
+    unix: date.getTime(),
+    utc: date.toUTCString(),
+  });
+});
 
 // your first API endpoint... 
 app.get("/api/hello", function (req, res) {
